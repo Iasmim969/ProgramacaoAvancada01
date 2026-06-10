@@ -62,10 +62,17 @@ class ServicoEmailPedido {
     }
 }
 
-// 4. Interface de tarefas do pedido
-interface ITarefasPedido {
+// 4. Interfaces de capacidades do pedido
+interface IPedidoPagavel {
     processarPagamento(): void;
+}
+
+interface IPedidoFaturavel {
     gerarNotaFiscal(): void;
+}
+
+interface IPedidoComEntregaFisica {
+    calcularFrete(calculadoraFrete: CalculadoraFretePedido): number;
     imprimirEtiquetaFisica(): void;
 }
 
@@ -81,7 +88,7 @@ class Pedido {
 }
 
 // 6. Implementação para produtos digitais
-class PedidoProdutoDigital extends Pedido implements ITarefasPedido {
+class PedidoProdutoDigital extends Pedido implements IPedidoPagavel, IPedidoFaturavel {
     processarPagamento(): void {
         console.log("Pagamento processado online.");
     }
@@ -89,8 +96,23 @@ class PedidoProdutoDigital extends Pedido implements ITarefasPedido {
     gerarNotaFiscal(): void {
         console.log("Nota fiscal digital gerada.");
     }
+}
+
+// 7. Implementação para produtos físicos
+class PedidoProdutoFisico extends Pedido implements IPedidoPagavel, IPedidoFaturavel, IPedidoComEntregaFisica {
+    processarPagamento(): void {
+        console.log("Pagamento processado.");
+    }
+
+    gerarNotaFiscal(): void {
+        console.log("Nota fiscal gerada.");
+    }
+
+    calcularFrete(calculadoraFrete: CalculadoraFretePedido): number {
+        return calculadoraFrete.calcular();
+    }
 
     imprimirEtiquetaFisica(): void {
-        throw new Error("Erro: Não é possível imprimir etiqueta para produto digital.");
+        console.log("Etiqueta física impressa.");
     }
 }
