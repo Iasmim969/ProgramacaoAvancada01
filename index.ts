@@ -68,7 +68,11 @@ class CalculadoraFretePedido {
 }
 
 class RepositorioPedido {
-    constructor(private bancoDeDados: IBancoDeDados) {}
+    private bancoDeDados: IBancoDeDados;
+
+    constructor(bancoDeDados: IBancoDeDados) {
+        this.bancoDeDados = bancoDeDados;
+    }
 
     salvar(pedido: Pedido): void {
         this.bancoDeDados.salvar(pedido);
