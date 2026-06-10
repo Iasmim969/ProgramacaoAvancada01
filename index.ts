@@ -163,3 +163,27 @@ const repositorioPedido = new RepositorioPedido(bancoDeDados);
 const pedidoFisico = new PedidoProdutoFisico(100, new DescontoClientePremium());
 
 repositorioPedido.salvar(pedidoFisico);
+
+/*
+Justificativas arquiteturais:
+
+1. SRP: a classe Pedido deixou de concentrar calculo de desconto, frete,
+persistencia e envio de e-mail. Essas responsabilidades foram extraidas para
+servicos especificos, deixando Pedido focada nos dados centrais do pedido.
+
+2. OCP: as regras de desconto foram movidas para implementacoes da interface
+IPoliticaDesconto. Assim, novos tipos de cliente podem ser adicionados criando
+novas classes de desconto, sem alterar a CalculadoraDescontoPedido.
+
+3. LSP: PedidoProdutoDigital nao e mais obrigado a implementar operacoes de
+entrega fisica que nao se aplicam a ele. Dessa forma, uma classe filha nao
+precisa lancar erro para cumprir um contrato inadequado.
+
+4. ISP: a antiga interface generica de tarefas foi dividida em interfaces
+menores e coesas: IPedidoPagavel, IPedidoFaturavel e IPedidoComEntregaFisica.
+Cada classe implementa apenas as capacidades que realmente possui.
+
+5. DIP: RepositorioPedido depende da abstracao IBancoDeDados, nao de uma classe
+concreta como BancoDeDadosMySQL. A implementacao do banco e injetada no
+construtor, facilitando troca de tecnologia e testes com BancoDeDadosEmMemoria.
+*/
