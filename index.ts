@@ -5,14 +5,47 @@ class BancoDeDadosMySQL {
     }
 }
 
-// 2. Interface de tarefas do pedido
+// 2. Servicos com responsabilidades especificas
+class CalculadoraDescontoPedido {
+    calcular(pedido: Pedido): number {
+        if (pedido.tipoCliente === "VIP") {
+            return pedido.valorTotal * 0.20;
+        } else if (pedido.tipoCliente === "ESTUDANTE") {
+            return pedido.valorTotal * 0.10;
+        }
+
+        return 0;
+    }
+}
+
+class CalculadoraFretePedido {
+    calcular(): number {
+        return 15.0;
+    }
+}
+
+class RepositorioPedido {
+    constructor(private bancoDeDados: BancoDeDadosMySQL) {}
+
+    salvar(pedido: Pedido): void {
+        this.bancoDeDados.salvar(pedido);
+    }
+}
+
+class ServicoEmailPedido {
+    enviarConfirmacao(): void {
+        console.log("Enviando e-mail de confirmação para o cliente...");
+    }
+}
+
+// 3. Interface de tarefas do pedido
 interface ITarefasPedido {
     processarPagamento(): void;
     gerarNotaFiscal(): void;
     imprimirEtiquetaFisica(): void;
 }
 
-// 3. Classe principal de Pedido
+// 4. Classe principal de Pedido
 class Pedido {
     public valorTotal: number;
     public tipoCliente: string;
@@ -21,37 +54,10 @@ class Pedido {
         this.valorTotal = valorTotal;
         this.tipoCliente = tipoCliente;
     }
-
-    calcularDesconto(): number {
-        if (this.tipoCliente === "VIP") {
-            return this.valorTotal * 0.20;
-        } else if (this.tipoCliente === "ESTUDANTE") {
-            return this.valorTotal * 0.10;
-        }
-        return 0;
-    }
-
-    calcularFrete(): number {
-        return 15.0;
-    }
-
-    salvarPedido(): void {
-        const db = new BancoDeDadosMySQL();
-        db.salvar(this);
-    }
-
-    enviarEmailConfirmacao(): void {
-        console.log("Enviando e-mail de confirmação para o cliente...");
-    }
 }
 
-// 4. Implementação para produtos digitais
+// 5. Implementação para produtos digitais
 class PedidoProdutoDigital extends Pedido implements ITarefasPedido {
-   
-    calcularFrete(): number {
-        throw new Error("Erro: Produtos digitais não possuem frete.");
-    }
-
     processarPagamento(): void {
         console.log("Pagamento processado online.");
     }
