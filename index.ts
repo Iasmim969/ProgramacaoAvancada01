@@ -5,16 +5,40 @@ class BancoDeDadosMySQL {
     }
 }
 
-// 2. Servicos com responsabilidades especificas
+// 2. Politicas de desconto
+interface IPoliticaDesconto {
+    calcular(valorTotal: number): number;
+}
+
+class DescontoClienteVip implements IPoliticaDesconto {
+    calcular(valorTotal: number): number {
+        return valorTotal * 0.20;
+    }
+}
+
+class DescontoClienteEstudante implements IPoliticaDesconto {
+    calcular(valorTotal: number): number {
+        return valorTotal * 0.10;
+    }
+}
+
+class SemDesconto implements IPoliticaDesconto {
+    calcular(_valorTotal: number): number {
+        return 0;
+    }
+}
+
+// Exemplo de extensao: novo desconto sem alterar a calculadora.
+class DescontoClientePremium implements IPoliticaDesconto {
+    calcular(valorTotal: number): number {
+        return valorTotal * 0.15;
+    }
+}
+
+// 3. Servicos com responsabilidades especificas
 class CalculadoraDescontoPedido {
     calcular(pedido: Pedido): number {
-        if (pedido.tipoCliente === "VIP") {
-            return pedido.valorTotal * 0.20;
-        } else if (pedido.tipoCliente === "ESTUDANTE") {
-            return pedido.valorTotal * 0.10;
-        }
-
-        return 0;
+        return pedido.politicaDesconto.calcular(pedido.valorTotal);
     }
 }
 
@@ -38,25 +62,25 @@ class ServicoEmailPedido {
     }
 }
 
-// 3. Interface de tarefas do pedido
+// 4. Interface de tarefas do pedido
 interface ITarefasPedido {
     processarPagamento(): void;
     gerarNotaFiscal(): void;
     imprimirEtiquetaFisica(): void;
 }
 
-// 4. Classe principal de Pedido
+// 5. Classe principal de Pedido
 class Pedido {
     public valorTotal: number;
-    public tipoCliente: string;
+    public politicaDesconto: IPoliticaDesconto;
 
-    constructor(valorTotal: number, tipoCliente: string) {
+    constructor(valorTotal: number, politicaDesconto: IPoliticaDesconto = new SemDesconto()) {
         this.valorTotal = valorTotal;
-        this.tipoCliente = tipoCliente;
+        this.politicaDesconto = politicaDesconto;
     }
 }
 
-// 5. Implementação para produtos digitais
+// 6. Implementação para produtos digitais
 class PedidoProdutoDigital extends Pedido implements ITarefasPedido {
     processarPagamento(): void {
         console.log("Pagamento processado online.");
