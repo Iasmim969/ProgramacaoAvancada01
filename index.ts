@@ -1,7 +1,26 @@
-// 1. Classe de Banco de Dados Concreta
-class BancoDeDadosMySQL {
+// 1. Abstracao de persistencia e implementacoes concretas
+interface IBancoDeDados {
+    salvar(dados: any): void;
+}
+
+class BancoDeDadosMySQL implements IBancoDeDados {
     salvar(dados: any): void {
         console.log("Salvando dados no MySQL...");
+    }
+}
+
+class BancoDeDadosPostgreSQL implements IBancoDeDados {
+    salvar(dados: any): void {
+        console.log("Salvando dados no PostgreSQL...");
+    }
+}
+
+class BancoDeDadosEmMemoria implements IBancoDeDados {
+    public dadosSalvos: any[] = [];
+
+    salvar(dados: any): void {
+        this.dadosSalvos.push(dados);
+        console.log("Salvando dados em memoria...");
     }
 }
 
@@ -49,7 +68,7 @@ class CalculadoraFretePedido {
 }
 
 class RepositorioPedido {
-    constructor(private bancoDeDados: BancoDeDadosMySQL) {}
+    constructor(private bancoDeDados: IBancoDeDados) {}
 
     salvar(pedido: Pedido): void {
         this.bancoDeDados.salvar(pedido);
@@ -137,3 +156,10 @@ class PedidoProdutoFisico extends Pedido implements IPedidoPagavel, IPedidoFatur
         console.log("Etiqueta física impressa.");
     }
 }
+
+// 9. Exemplo de injecao de dependencia
+const bancoDeDados: IBancoDeDados = new BancoDeDadosMySQL();
+const repositorioPedido = new RepositorioPedido(bancoDeDados);
+const pedidoFisico = new PedidoProdutoFisico(100, new DescontoClientePremium());
+
+repositorioPedido.salvar(pedidoFisico);
