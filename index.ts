@@ -76,7 +76,28 @@ interface IPedidoComEntregaFisica {
     imprimirEtiquetaFisica(): void;
 }
 
-// 5. Classe principal de Pedido
+// 5. Servicos que dependem apenas das interfaces necessarias
+class ServicoPagamentoPedido {
+    processar(pedido: IPedidoPagavel): void {
+        pedido.processarPagamento();
+    }
+}
+
+class ServicoFaturamentoPedido {
+    emitirNotaFiscal(pedido: IPedidoFaturavel): void {
+        pedido.gerarNotaFiscal();
+    }
+}
+
+class ServicoEntregaFisicaPedido {
+    prepararEntrega(pedido: IPedidoComEntregaFisica): void {
+        const frete = pedido.calcularFrete(new CalculadoraFretePedido());
+        console.log(`Frete calculado: R$ ${frete}`);
+        pedido.imprimirEtiquetaFisica();
+    }
+}
+
+// 6. Classe principal de Pedido
 class Pedido {
     public valorTotal: number;
     public politicaDesconto: IPoliticaDesconto;
@@ -87,7 +108,7 @@ class Pedido {
     }
 }
 
-// 6. Implementação para produtos digitais
+// 7. Implementação para produtos digitais
 class PedidoProdutoDigital extends Pedido implements IPedidoPagavel, IPedidoFaturavel {
     processarPagamento(): void {
         console.log("Pagamento processado online.");
@@ -98,7 +119,7 @@ class PedidoProdutoDigital extends Pedido implements IPedidoPagavel, IPedidoFatu
     }
 }
 
-// 7. Implementação para produtos físicos
+// 8. Implementação para produtos físicos
 class PedidoProdutoFisico extends Pedido implements IPedidoPagavel, IPedidoFaturavel, IPedidoComEntregaFisica {
     processarPagamento(): void {
         console.log("Pagamento processado.");
